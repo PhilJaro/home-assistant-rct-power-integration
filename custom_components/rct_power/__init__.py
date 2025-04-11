@@ -9,11 +9,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Literal
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.typing import ConfigType
 from homeassistant.util.hass_dict import HassEntryKey
 
 from .coordinator import RctPowerDataUpdateCoordinator
@@ -34,14 +32,7 @@ class RctData:
     update_coordinators: dict[EntityUpdatePriority, RctPowerDataUpdateCoordinator]
 
 
-async def async_setup(hass: HomeAssistant, config: ConfigType):
-    """Set up this integration using YAML is not supported."""
-    return True
-
-
-async def async_setup_entry(
-    hass: HomeAssistant, entry: RctConfigEntry
-) -> Literal[True]:
+async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     """Set up this integration using UI."""
 
     config_entry_data = RctPowerConfigEntryData.from_config_entry(entry)
