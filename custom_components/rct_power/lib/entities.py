@@ -84,6 +84,13 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
+        key="energy.e_grid_feed_month",
+        name="Grid Energy Production Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+        state_class=SensorStateClass.TOTAL,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
         key="energy.e_grid_feed_absolute_total",
         unique_id="energy.e_grid_feed_absolute_total",  # to avoid collision
         object_names=["energy.e_grid_feed_total"],
@@ -96,6 +103,13 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         get_device_info=get_inverter_device_info,
         key="energy.e_grid_load_day",
         name="Grid Energy Consumption Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="energy.e_grid_load_month",
+        name="Grid Energy Consumption Month",
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
