@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -14,8 +15,8 @@ from custom_components.rct_power.const import (
     CONF_HOSTNAME,
     DEFAULT_ENTITY_PREFIX,
     DEFAULT_PORT,
+    DOMAIN,
 )
-from custom_components.rct_power.lib.const import DOMAIN
 
 
 # We can pass fixtures as defined in conftest.py to tell pytest to use the fixture
@@ -63,6 +64,7 @@ async def test_setup_entry_exception(hass: HomeAssistant) -> None:
         },
         entry_id="test",
     )
+    config_entry.mock_state(hass, ConfigEntryState.SETUP_IN_PROGRESS)
 
     # In this case we are testing the condition where async_setup_entry raises
     # ConfigEntryNotReady using the `error_on_get_data` fixture which simulates

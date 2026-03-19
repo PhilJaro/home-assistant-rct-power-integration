@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import LOGGER
+from .const import DOMAIN, LOGGER
 from .lib.api import (
     ApiResponseValue,
     InvalidApiResponse,
@@ -14,7 +14,6 @@ from .lib.api import (
     RctPowerData,
     ValidApiResponse,
 )
-from .lib.const import DOMAIN
 
 
 class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
@@ -27,10 +26,10 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         hass: HomeAssistant,
         entry: ConfigEntry,
         *,
-        name_suffix: str,
         client: RctPowerApiClient,
+        name_suffix: str,
         object_ids: list[int],
-        update_interval: timedelta | None = None,
+        update_interval: int,  # in seconds
     ) -> None:
         self.client = client
         self.object_ids = object_ids
@@ -39,7 +38,7 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
             config_entry=entry,
             logger=LOGGER,
             name=f"{DOMAIN} {entry.unique_id} {name_suffix}",
-            update_interval=update_interval,
+            update_interval=timedelta(seconds=update_interval),
         )
 
     def get_latest_response(
