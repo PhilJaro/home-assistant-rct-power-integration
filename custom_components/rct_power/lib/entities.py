@@ -52,6 +52,21 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         device_class=SensorDeviceClass.TIMESTAMP,
         get_native_value=get_first_api_response_value_as_timestamp,
     ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="battery.soc",
+        name="Battery State of Charge",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        device_class=SensorDeviceClass.BATTERY,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="battery.cycles",
+        name="Battery Cycles",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
 ]
 
 inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
@@ -60,20 +75,6 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         key="android_description",
         name="Inverter Device Name",
         update_priority=EntityUpdatePriority.STATIC,
-    ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="energy.e_load_day",
-        name="Consumer Energy Consumption Day",
-        update_priority=EntityUpdatePriority.INFREQUENT,
-        state_class=SensorStateClass.TOTAL_INCREASING,
-    ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="energy.e_load_total",
-        name="Consumer Energy Consumption Total",
-        update_priority=EntityUpdatePriority.INFREQUENT,
-        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
@@ -129,22 +130,39 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         state_class=SensorStateClass.TOTAL_INCREASING,
         get_native_value=sum_api_response_values_as_state,
     ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="g_sync.p_ac_load_sum_lp",
+        name="Consumer Power",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="g_sync.p_acc_lp",
+        name="Battery Power",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="g_sync.p_ac_grid_sum_lp",
+        name="Grid Power",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="dc_conv.dc_conv_struct[0].p_dc",
+        name="Generator A Power",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="dc_conv.dc_conv_struct[1].p_dc",
+        name="Generator B Power",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
 ]
 
 bitfield_sensor_entity_descriptions: list[RctPowerBitfieldSensorEntityDescription] = [
-    RctPowerBitfieldSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="fault.flt",
-        object_names=[
-            "fault[0].flt",
-            "fault[1].flt",
-            "fault[2].flt",
-            "fault[3].flt",
-        ],
-        name="Faults",
-        update_priority=EntityUpdatePriority.FREQUENT,
-        unique_id=f"{0x37F9D5CA}",  # for backwards-compatibility
-    ),
     RctPowerBitfieldSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.bat_status",
