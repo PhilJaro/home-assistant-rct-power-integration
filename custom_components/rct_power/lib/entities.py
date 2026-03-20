@@ -54,14 +54,6 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
-        key="battery.soc",
-        name="Battery State of Charge",
-        update_priority=EntityUpdatePriority.FREQUENT,
-        state_class=SensorStateClass.MEASUREMENT,
-        device_class=SensorDeviceClass.BATTERY,
-    ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_battery_device_info,
         key="battery.cycles",
         name="Battery Cycles",
         update_priority=EntityUpdatePriority.INFREQUENT,
@@ -130,36 +122,7 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         state_class=SensorStateClass.TOTAL_INCREASING,
         get_native_value=sum_api_response_values_as_state,
     ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="g_sync.p_ac_load_sum_lp",
-        name="Consumer Power",
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="g_sync.p_acc_lp",
-        name="Battery Power",
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="g_sync.p_ac_grid_sum_lp",
-        name="Grid Power",
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="dc_conv.dc_conv_struct[0].p_dc",
-        name="Generator A Power",
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    RctPowerSensorEntityDescription(
-        get_device_info=get_inverter_device_info,
-        key="dc_conv.dc_conv_struct[1].p_dc",
-        name="Generator B Power",
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
+
 ]
 
 bitfield_sensor_entity_descriptions: list[RctPowerBitfieldSensorEntityDescription] = [
