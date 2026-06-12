@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from typing import cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -59,4 +60,32 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         return isinstance(self.get_latest_response(object_id), ValidApiResponse)
 
     async def _async_update_data(self) -> RctPowerData:
-        return await self.client.async_get_data(object_ids=self.object_ids)
+        fresh_data = await self.client.async_get_data(object_ids=self.object_ids)
+        previous_data = cast(RctPowerData | None, getattr(self, "data", None)) or {}
+
+        return {
+            object_id: self._keep_last_valid_response(
+                fresh_response=fresh_response,
+                previous_response=previous_data.get(object_id),
+            )
+            for object_id, fresh_response in fresh_data.items()
+        }
+
+    def _keep_last_valid_response(
+        self,
+        *,
+        fresh_response: ValidApiResponse | InvalidApiResponse,
+        previous_response: ValidApiResponse | InvalidApiResponse | None,
+    ) -> ValidApiResponse | InvalidApiResponse:
+        if isinstance(fresh_response, ValidApiResponse):
+            return fresh_response
+
+        if isinstance(previous_response, ValidApiResponse):
+            LOGGER.debug(
+                "Keeping last valid RCT Power value for object %x after invalid response: %s",
+                fresh_response.object_id,
+                fresh_response.cause,
+            )
+            return previous_response
+
+        return fresh_response
