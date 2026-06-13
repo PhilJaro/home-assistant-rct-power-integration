@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import cast
 
 from homeassistant.config_entries import ConfigEntry
@@ -15,6 +15,8 @@ from .lib.api import (
     RctPowerData,
     ValidApiResponse,
 )
+
+MISSING_API_RESPONSE_CAUSE = "MISSING_RESPONSE"
 
 
 class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
@@ -34,6 +36,8 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
     ) -> None:
         self.client = client
         self.object_ids = object_ids
+        self._stale_update_counts: dict[int, int] = {}
+        self._stale_causes: dict[int, str] = {}
         super().__init__(
             hass=hass,
             config_entry=entry,
@@ -59,33 +63,69 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
     def has_valid_value(self, object_id: int) -> bool:
         return isinstance(self.get_latest_response(object_id), ValidApiResponse)
 
+    def is_response_stale(self, object_id: int) -> bool:
+        """Return whether the current value is kept from an earlier valid update."""
+
+        return self._stale_update_counts.get(object_id, 0) > 0
+
+    def get_stale_update_count(self, object_id: int) -> int:
+        """Return consecutive invalid or missing updates for the object."""
+
+        return self._stale_update_counts.get(object_id, 0)
+
+    def get_stale_cause(self, object_id: int) -> str | None:
+        """Return the latest cause that made the current value stale."""
+
+        return self._stale_causes.get(object_id)
+
     async def _async_update_data(self) -> RctPowerData:
         fresh_data = await self.client.async_get_data(object_ids=self.object_ids)
+        fresh_data = fresh_data or {}
         previous_data = cast(RctPowerData | None, getattr(self, "data", None)) or {}
 
         return {
             object_id: self._keep_last_valid_response(
-                fresh_response=fresh_response,
+                object_id=object_id,
+                fresh_response=fresh_data.get(object_id),
                 previous_response=previous_data.get(object_id),
             )
-            for object_id, fresh_response in fresh_data.items()
+            for object_id in self.object_ids
         }
 
     def _keep_last_valid_response(
         self,
         *,
-        fresh_response: ValidApiResponse | InvalidApiResponse,
+        object_id: int,
+        fresh_response: ValidApiResponse | InvalidApiResponse | None,
         previous_response: ValidApiResponse | InvalidApiResponse | None,
     ) -> ValidApiResponse | InvalidApiResponse:
         if isinstance(fresh_response, ValidApiResponse):
+            self._stale_update_counts.pop(object_id, None)
+            self._stale_causes.pop(object_id, None)
             return fresh_response
 
+        invalid_response = (
+            fresh_response
+            if fresh_response is not None
+            else InvalidApiResponse(
+                object_id=object_id,
+                time=datetime.now(),
+                cause=MISSING_API_RESPONSE_CAUSE,
+            )
+        )
+
         if isinstance(previous_response, ValidApiResponse):
+            self._stale_update_counts[object_id] = (
+                self._stale_update_counts.get(object_id, 0) + 1
+            )
+            self._stale_causes[object_id] = invalid_response.cause
             LOGGER.debug(
                 "Keeping last valid RCT Power value for object %x after invalid response: %s",
-                fresh_response.object_id,
-                fresh_response.cause,
+                object_id,
+                invalid_response.cause,
             )
             return previous_response
 
-        return fresh_response
+        self._stale_update_counts.pop(object_id, None)
+        self._stale_causes.pop(object_id, None)
+        return invalid_response

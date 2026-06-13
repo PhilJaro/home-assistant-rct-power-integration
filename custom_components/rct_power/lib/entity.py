@@ -121,8 +121,24 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
         return self.object_infos[0].unit
 
-    @cached_property
+    @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
+        stale_responses = {
+            object_info.name: {
+                "consecutive_failed_updates": coordinator.get_stale_update_count(
+                    object_info.object_id
+                ),
+                "cause": coordinator.get_stale_cause(object_info.object_id),
+            }
+            for object_info in self.object_infos
+            for coordinator in self.coordinators
+            if coordinator.get_latest_response(object_info.object_id) is not None
+            and coordinator.is_response_stale(object_info.object_id)
+        }
+
+        if stale_responses:
+            return {"stale_responses": stale_responses}
+
         return {}
 
     @property
