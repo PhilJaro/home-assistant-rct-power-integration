@@ -46,6 +46,9 @@ jobs:
         uses: "hacs/action@22.5.0"
         with:
           category: "integration"
+          # This fork is currently personal-only. Repository-level checks for
+          # public HACS publishing metadata are intentionally ignored here.
+          ignore: "issues topics"
 
   hassfest:
     runs-on: "ubuntu-latest"
