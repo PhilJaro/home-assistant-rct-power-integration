@@ -122,7 +122,6 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         state_class=SensorStateClass.TOTAL_INCREASING,
         get_native_value=sum_api_response_values_as_state,
     ),
-
 ]
 
 bitfield_sensor_entity_descriptions: list[RctPowerBitfieldSensorEntityDescription] = [
