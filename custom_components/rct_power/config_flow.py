@@ -36,24 +36,28 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            client = RctPowerApiClient(
-                hostname=user_input[CONF_HOSTNAME],
-                port=user_input[CONF_PORT],
-            )
-            serial_number = await client.get_serial_number()
+            try:
+                client = RctPowerApiClient(
+                    hostname=user_input[CONF_HOSTNAME],
+                    port=user_input[CONF_PORT],
+                )
+                serial_number = await client.get_serial_number()
+            except Exception:  # noqa: BLE001
+                serial_number = None
 
             if serial_number is not None:
                 await self.async_set_unique_id(serial_number)
+                self._abort_if_unique_id_configured()  # pyright: ignore[reportUnknownMemberType]
 
                 return self.async_create_entry(
                     title=self.get_title(user_input),
                     data=user_input,
                     description_placeholders={
-                        "repo_url": "https://github.com/weltenwort/home-assistant-rct-power-integration"
+                        "repo_url": "https://github.com/PhilJaro/home-assistant-rct-power-integration"
                     },
                 )
-            else:
-                errors["base"] = "connect"
+
+            errors["base"] = "connect"
 
         return self.async_show_form(
             step_id="user",

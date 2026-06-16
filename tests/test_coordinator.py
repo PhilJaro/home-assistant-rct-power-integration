@@ -3,6 +3,13 @@ from __future__ import annotations
 # pyright: reportAttributeAccessIssue=false, reportPrivateUsage=false, reportUnknownMemberType=false
 from datetime import datetime
 
+from rctclient.registry import REGISTRY
+
+from custom_components.rct_power import (
+    STATIC_DEVICE_INFO_OBJECT_NAMES,
+    object_ids_for_update_priority,
+)
+from custom_components.rct_power.const import EntityUpdatePriority
 from custom_components.rct_power.coordinator import (
     MISSING_API_RESPONSE_CAUSE,
     RctPowerDataUpdateCoordinator,
@@ -27,6 +34,13 @@ def _coordinator() -> RctPowerDataUpdateCoordinator:
     coordinator._stale_update_counts = {}
     coordinator._stale_causes = {}
     return coordinator
+
+
+def test_static_updates_include_device_info_objects() -> None:
+    static_object_ids = object_ids_for_update_priority(EntityUpdatePriority.STATIC)
+
+    for object_name in STATIC_DEVICE_INFO_OBJECT_NAMES:
+        assert REGISTRY.get_by_name(object_name).object_id in static_object_ids
 
 
 def test_keep_last_valid_response_returns_fresh_valid_response() -> None:

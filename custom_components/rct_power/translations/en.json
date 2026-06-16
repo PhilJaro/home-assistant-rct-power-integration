@@ -2,27 +2,28 @@
   "config": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look here: {repo_url}",
+        "description": "If you need help with the configuration, see: {repo_url}",
         "data": {
-          "model": "Model",
           "hostname": "Host name",
-          "port": "Port"
+          "port": "Port",
+          "entity_prefix": "Entity prefix"
         }
       }
     },
     "error": {
-      "connect": "Failed to connect to {hostname}:{port}."
+      "connect": "Failed to connect."
     },
     "abort": {
-      "single_instance_allowed": "Only a single instance is allowed."
+      "already_configured": "This inverter is already configured."
     }
   },
   "options": {
     "step": {
       "user": {
         "data": {
-          "objects": "Enabled objects",
-          "scan_interval": "Polling interval"
+          "frequent_scan_interval": "Frequent polling interval",
+          "infrequent_scan_interval": "Infrequent polling interval",
+          "static_scan_interval": "Static polling interval"
         }
       }
     }

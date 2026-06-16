@@ -2,7 +2,7 @@
 Custom integration to integrate RCT Power with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/weltenwort/home-assistant-rct-power-integration
+https://github.com/PhilJaro/home-assistant-rct-power-integration
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.util.hass_dict import HassEntryKey
+from rctclient.registry import REGISTRY
 
 from .const import (
     CONF_HOSTNAME,
@@ -33,6 +34,13 @@ RCT_DATA_KEY: HassEntryKey[RctData] = HassEntryKey(DOMAIN)
 
 type RctConfigEntry = ConfigEntry[RctData]
 
+STATIC_DEVICE_INFO_OBJECT_NAMES = [
+    "inverter_sn",
+    "svnversion",
+    "battery.bms_sn",
+    "battery.bms_software_version",
+]
+
 
 @dataclass
 class RctData:
@@ -41,14 +49,21 @@ class RctData:
 
 def object_ids_for_update_priority(update_priority: EntityUpdatePriority) -> list[int]:
     """Collect all object_ids for an update_priority."""
-    return list(
-        {
-            object_info.object_id
-            for entity_description in all_entity_descriptions
-            if entity_description.update_priority == update_priority
-            for object_info in resolve_object_infos(entity_description)
-        }
-    )
+    object_ids = {
+        object_info.object_id
+        for entity_description in all_entity_descriptions
+        if entity_description.update_priority == update_priority
+        for object_info in resolve_object_infos(entity_description)
+    }
+
+    if update_priority == EntityUpdatePriority.STATIC:
+        # ponytail: device registry needs these, but they should not become sensors.
+        object_ids.update(
+            REGISTRY.get_by_name(name).object_id
+            for name in STATIC_DEVICE_INFO_OBJECT_NAMES
+        )
+
+    return list(object_ids)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
