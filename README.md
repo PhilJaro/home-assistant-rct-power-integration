@@ -185,20 +185,20 @@ For this fork, the authoritative list of currently exposed entities is the
 
 ### Photovoltaic generators
 
-| Entity name                                        | Unit | Description                                                           |
-| -------------------------------------------------- | ---- | --------------------------------------------------------------------- |
-| Generator A Energy Production Day/Month/Year/Total | Wh   | the cumulative energy produced by generator string A                  |
-| Generator B Energy Production Day/Month/Year/Total | Wh   | the cumulative energy produced by generator string B                  |
-| All Generators Energy Production Total             | Wh   | the sum of the cumulative energy produced by both generator strings   |
-| Generator A Power                                  | W    | the instantaneous power produced by generator string A                |
-| Generator B Power                                  | W    | the instantaneous power produced by generator string B                |
+| Entity name                                        | Unit | Description                                                                     |
+| -------------------------------------------------- | ---- | ------------------------------------------------------------------------------- |
+| Generator A Energy Production Day/Month/Year/Total | Wh   | the cumulative energy produced by generator string A                            |
+| Generator B Energy Production Day/Month/Year/Total | Wh   | the cumulative energy produced by generator string B                            |
+| All Generators Energy Production Total             | Wh   | the sum of the cumulative energy produced by both generator strings             |
+| Generator A Power                                  | W    | the instantaneous power produced by generator string A                          |
+| Generator B Power                                  | W    | the instantaneous power produced by generator string B                          |
 | All Generators Power                               | W    | calculated sum of the instantaneous power produced by generator strings A and B |
-| Generator A Voltage                                | V    | the instantaneous voltage produced by generator string A              |
-| Generator B Voltage                                | V    | the instantaneous voltage produced by generator string B              |
-| Generator Maximum Power                            | W    | the configured combined maximum power of both generator strings       |
-| Insulation Resistance                              | Ohm  |                                                                       |
-| Insulation Resistance Positive/Negative Input      | Ohm  |                                                                       |
-| Minimum Insulation Resistance                      | Ohm  |                                                                       |
+| Generator A Voltage                                | V    | the instantaneous voltage produced by generator string A                        |
+| Generator B Voltage                                | V    | the instantaneous voltage produced by generator string B                        |
+| Generator Maximum Power                            | W    | the configured combined maximum power of both generator strings                 |
+| Insulation Resistance                              | Ohm  |                                                                                 |
+| Insulation Resistance Positive/Negative Input      | Ohm  |                                                                                 |
+| Minimum Insulation Resistance                      | Ohm  |                                                                                 |
 
 ### Inverter
 
